@@ -22,6 +22,42 @@ CREATE TABLE Wallet (
   Card VARCHAR(100),
   FOREIGN KEY (user_id) REFERENCES Users(id)
 );
+
+CREATE TABLE Card (
+  id VARCHAR(50) PRIMARY KEY,
+  wallet_id VARCHAR(50),
+  name VARCHAR(100),
+  card_type VARCHAR(100),
+  card_number VARCHAR(100),
+  type VARCHAR(100),
+  FOREIGN KEY (wallet_id) REFERENCES Wallet(id)
+);
+
+CREATE TABLE Bank (
+  id VARCHAR(50) PRIMARY KEY,
+  wallet_id VARCHAR(50),
+  name VARCHAR(100),
+  bank_code VARCHAR(100),
+  bank_account VARCHAR(100),
+  type VARCHAR(100),
+  FOREIGN KEY (wallet_id) REFERENCES Wallet(id)
+);
+
+CREATE TABLE Transaction (
+  id VARCHAR(50) PRIMARY KEY,
+  wallet_id VARCHAR(50),
+  nominal NUMERIC(15,2),
+  bank VARCHAR(100),
+  bank_account VARCHAR(100),
+  email_receiver VARCHAR(100),
+  status VARCHAR(100),
+  detail VARCHAR(255),
+  created_by VARCHAR(100),
+  created_at TIMESTAMP,
+  edited_by VARCHAR(100),
+  edited_at TIMESTAMP,
+  FOREIGN KEY (wallet_id) REFERENCES Wallet(id)
+);
 ```
 
 
