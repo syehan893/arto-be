@@ -8,10 +8,10 @@ This project uses PostgreSQL as the database
 ```sql
 
 CREATE TABLE Users (
-	id VARCHAR(50) PRIMARY KEY,
-	name VARCHAR(100),
-	email VARCHAR(100),
-	password VARCHAR(100)
+  id VARCHAR(50) PRIMARY KEY,
+  name VARCHAR(100),
+  email VARCHAR(100),
+  password VARCHAR(100)
 );
 
 CREATE TABLE Wallet (
