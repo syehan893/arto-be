@@ -1,7 +1,9 @@
 # arto-be
 Poroject arto-be
 
-<h1>Database</h1>
+## DATABASE
+
+This project uses PostgreSQL as the database
 
 CREATE TABLE Users (
   id VARCHAR(50) PRIMARY KEY,
