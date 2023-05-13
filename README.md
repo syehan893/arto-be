@@ -5,6 +5,8 @@ Poroject arto-be
 
 This project uses PostgreSQL as the database
 
+```sql
+
 CREATE TABLE Users (
 	id VARCHAR(50) PRIMARY KEY,
 	name VARCHAR(100),
@@ -20,5 +22,6 @@ CREATE TABLE Wallet (
   Card VARCHAR(100),
   FOREIGN KEY (user_id) REFERENCES Users(id)
 );
+```
 
 
