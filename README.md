@@ -58,6 +58,42 @@ CREATE TABLE Transaction (
   edited_at TIMESTAMP,
   FOREIGN KEY (wallet_id) REFERENCES Wallet(id)
 );
+
+CREATE TABLE history (
+  id VARCHAR(255) PRIMARY KEY,
+  transaction_id VARCHAR(255),
+  name VARCHAR(255),
+  transaction VARCHAR(255),
+  status BOOLEAN,
+  type VARCHAR(255),
+  edited_at TIMESTAMP,
+  edited_by VARCHAR(255),
+  created_at TIMESTAMP,
+  created_by VARCHAR(255),
+  FOREIGN KEY (transaction_id) REFERENCES transaction(id)
+);
+
+CREATE TABLE request_payment (
+  id VARCHAR(255) PRIMARY KEY,
+  transaction_id VARCHAR(255),
+  name VARCHAR(255),
+  type VARCHAR(255),
+  action VARCHAR(255),
+  status BOOLEAN,
+  edited_at TIMESTAMP,
+  edited_by VARCHAR(255),
+  created_at TIMESTAMP,
+  created_by VARCHAR(255),
+  FOREIGN KEY (transaction_id) REFERENCES transaction(id)
+);
+
+CREATE TABLE help_centre (
+  id VARCHAR(255) PRIMARY KEY,
+  name VARCHAR(255),
+  type VARCHAR(255),
+  phone_number VARCHAR(255)
+);
+
 ```
 
 
