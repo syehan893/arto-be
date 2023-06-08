@@ -1,32 +1,68 @@
 import express from 'express';
-import { Pool } from 'pg';
+import userController from './controllers/user_controller';
+import bankController from './controllers/bank_controller';
+import cardController from './controllers/card_controller';
+import walletController from './controllers/wallet_controller';
+import transactionController from './controllers/transaction_controller';
+import requestPaymentController from './controllers/request_payment_controller';
+import historyController from './controllers/history_controller';
+import bodyParser from 'body-parser';
 
 const app = express();
 const port = 3000;
 
 
-const pool  = new Pool({
-    host : 'arto-prod.coqcsdzvxeet.ap-southeast-1.rds.amazonaws.com',        
-    port  : 5432,        
-    database : 'arto-dev',        
-    user : 'postgres',       
-    password : 'meteologi200',    
-  })
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
+// user routes
+app.get('/api/users', userController.getAllUsers);
+app.get('/api/users/:id', userController.getUserById);
+app.post('/api/users', userController.createUser);
+app.put('/api/users/:id', userController.updateUser);
+app.delete('/api/users/:id', userController.deleteUser);
 
-app.get('/api/data', async (req, res) => {
-  try {
+// bank routes
+app.get('/api/banks', bankController.getAllBanks);
+app.get('/api/banks/:id', bankController.getBankById);
+app.post('/api/banks', bankController.createBank);
+app.put('/api/banks/:id', bankController.updateBank);
+app.delete('/api/banks/:id', bankController.deleteBank);
 
-    const query = 'SELECT * FROM users';
+// card routes
+app.get('/api/cards', cardController.getAllCards);
+app.get('/api/cards/:id', cardController.getCardById);
+app.post('/api/cards', cardController.createCard);
+app.put('/api/cards/:id', cardController.updateCard);
+app.delete('/api/cards/:id', cardController.deleteCard);
 
-    const { rows } = await pool.query(query);
+// wallet routes
+app.get('/api/wallets', walletController.getAllWallets);
+app.get('/api/wallets/:id', walletController.getWalletById);
+app.post('/api/wallets', walletController.createWallet);
+app.put('/api/wallets/:id', walletController.updateWallet);
+app.delete('/api/wallets/:id', walletController.deleteWallet);
 
-    res.json(rows);
-  } catch (error) {
-    console.error('Error executing query:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+// transaction routes
+app.get('/api/transactions', transactionController.getAllTransactions);
+app.get('/api/transactions/:id', transactionController.getTransactionById);
+app.post('/api/transactions', transactionController.createTransaction);
+app.put('/api/transactions/:id', transactionController.updateTransaction);
+app.delete('/api/transactions/:id', transactionController.deleteTransaction);
+
+// request payment routes
+app.get('/api/request-payments', requestPaymentController.getAllRequestPayments);
+app.get('/api/request-payments/:id', requestPaymentController.getRequestPaymentById);
+app.post('/api/request-payments', requestPaymentController.createRequestPayment);
+app.put('/api/request-payments/:id', requestPaymentController.updateRequestPayment);
+app.delete('/api/request-payments/:id', requestPaymentController.deleteRequestPayment);
+
+// history routes
+app.get('/api/histories', historyController.getAllHistories);
+app.get('/api/histories/:id', historyController.getHistoryById);
+app.post('/api/histories', historyController.createHistory);
+app.put('/api/histories/:id', historyController.updateHistory);
+app.delete('/api/histories/:id', historyController.deleteHistory);
 
 
 app.listen(port, () => {
