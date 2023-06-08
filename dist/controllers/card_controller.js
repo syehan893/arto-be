@@ -1,0 +1,83 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const card_repository_1 = __importDefault(require("../repositories/card_repository"));
+class CardController {
+    getAllCards(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const result = yield card_repository_1.default.getAllCards();
+                res.send(result.rows);
+            }
+            catch (err) {
+                res.status(500).send('Internal Server Error');
+            }
+        });
+    }
+    getCardById(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cardId = parseInt(req.params.id);
+            try {
+                const result = yield card_repository_1.default.getCardById(cardId);
+                if (result.rowCount > 0) {
+                    res.send(result.rows[0]);
+                }
+                else {
+                    res.status(404).send('Card not found');
+                }
+            }
+            catch (err) {
+                res.status(500).send('Internal Server Error');
+            }
+        });
+    }
+    createCard(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const { walletId, name, cardType, cardNumber, type } = req.body;
+            try {
+                yield card_repository_1.default.createCard(walletId, name, cardType, cardNumber, type);
+                res.send('Card created successfully');
+            }
+            catch (err) {
+                res.status(500).send('Internal Server Error');
+            }
+        });
+    }
+    updateCard(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cardId = parseInt(req.params.id);
+            const { walletId, name, cardType, cardNumber, type } = req.body;
+            try {
+                yield card_repository_1.default.updateCard(cardId, walletId, name, cardType, cardNumber, type);
+                res.send('Card updated successfully');
+            }
+            catch (err) {
+                res.status(500).send('Internal Server Error');
+            }
+        });
+    }
+    deleteCard(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const cardId = parseInt(req.params.id);
+            try {
+                yield card_repository_1.default.deleteCard(cardId);
+                res.send('Card deleted successfully');
+            }
+            catch (err) {
+                res.status(500).send('Internal Server Error');
+            }
+        });
+    }
+}
+exports.default = new CardController();

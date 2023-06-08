@@ -1,12 +1,12 @@
 # Direktori node_modules
-/node_modules
+# /node_modules
 
 # Berkas kompilasi TypeScript
-/dist
+# /dist
 
 # Berkas konfigurasi IDE
-.vscode/
-.idea/
+# .vscode/
+# .idea/
 
 # config
 .env
