@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
+import { decodeToken } from '../common/token';
 import userRepository from '../repositories/user_repository';
 
 class UserController {
   async getAllUsers(req: Request, res: Response) {
     try {
-      const result = await userRepository.getAllUsers();
-      res.send(result.rows);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await userRepository.getAllUsers();
+        res.send(result.rows);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -14,11 +19,15 @@ class UserController {
   async getUserById(req: Request, res: Response) {
     const userId = parseInt(req.params.id);
     try {
-      const result = await userRepository.getUserById(userId);
-      if (result.rows.length > 0) {
-        res.send(result.rows[0]);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await userRepository.getUserById(userId);
+        if (result.rows.length > 0) {
+          res.send(result.rows[0]);
+        } else {
+          res.status(404).send('User not found');
+        }
       } else {
-        res.status(404).send('User not found');
+        res.status(401).send('Unauthorized');
       }
     } catch (err) {
       res.status(500).send('Internal Server Error');
@@ -28,8 +37,12 @@ class UserController {
   async createUser(req: Request, res: Response) {
     const { name, email, password } = req.body;
     try {
-      await userRepository.createUser(name, email, password);
-      res.send('User created successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await userRepository.createUser(name, email, password);
+        res.send('User created successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -39,8 +52,12 @@ class UserController {
     const userId = parseInt(req.params.id);
     const { name, email, password } = req.body;
     try {
-      await userRepository.updateUser(userId, name, email, password);
-      res.send('User updated successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await userRepository.updateUser(userId, name, email, password);
+        res.send('User updated successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -49,8 +66,12 @@ class UserController {
   async deleteUser(req: Request, res: Response) {
     const userId = parseInt(req.params.id);
     try {
-      await userRepository.deleteUser(userId);
-      res.send('User deleted successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await userRepository.deleteUser(userId);
+        res.send('User deleted successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }

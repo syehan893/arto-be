@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
+import { decodeToken } from '../common/token';
 import walletRepository from '../repositories/wallet_repository';
 
 class WalletController {
   async getAllWallets(req: Request, res: Response) {
     try {
-      const result = await walletRepository.getAllWallets();
-      res.send(result.rows);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await walletRepository.getAllWallets();
+        res.send(result.rows);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -14,11 +19,15 @@ class WalletController {
   async getWalletById(req: Request, res: Response) {
     const walletId = parseInt(req.params.id);
     try {
-      const result = await walletRepository.getWalletById(walletId);
-      if (result.rowCount > 0) {
-        res.send(result.rows[0]);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await walletRepository.getWalletById(walletId);
+        if (result.rowCount > 0) {
+          res.send(result.rows[0]);
+        } else {
+          res.status(404).send('Wallet not found');
+        }
       } else {
-        res.status(404).send('Wallet not found');
+        res.status(401).send('Unauthorized');
       }
     } catch (err) {
       res.status(500).send('Internal Server Error');
@@ -28,8 +37,12 @@ class WalletController {
   async createWallet(req: Request, res: Response) {
     const { userId, balance, bank, card } = req.body;
     try {
-      await walletRepository.createWallet(userId, balance, bank, card);
-      res.send('Wallet created successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await walletRepository.createWallet(userId, balance, bank, card);
+        res.send('Wallet created successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -39,8 +52,12 @@ class WalletController {
     const walletId = parseInt(req.params.id);
     const { userId, balance, bank, card } = req.body;
     try {
-      await walletRepository.updateWallet(walletId, userId, balance, bank, card);
-      res.send('Wallet updated successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await walletRepository.updateWallet(walletId, userId, balance, bank, card);
+        res.send('Wallet updated successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -49,8 +66,12 @@ class WalletController {
   async deleteWallet(req: Request, res: Response) {
     const walletId = parseInt(req.params.id);
     try {
-      await walletRepository.deleteWallet(walletId);
-      res.send('Wallet deleted successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await walletRepository.deleteWallet(walletId);
+        res.send('Wallet deleted successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }

@@ -12,6 +12,11 @@ class UserRepository {
     return await pool.query(query, [id]);
   }
 
+  async getUserByEmail(email: String): Promise<QueryResult> {
+    const query = 'SELECT * FROM "user" WHERE email = $1';
+    return await pool.query(query, [email]);
+  }
+
   async createUser(name: string, email: string, password: string): Promise<QueryResult> {
     const query = 'INSERT INTO "user" (name, email, password) VALUES ($1, $2, $3)';
     return await pool.query(query, [name, email, password]);

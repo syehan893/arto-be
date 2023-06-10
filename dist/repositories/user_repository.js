@@ -26,6 +26,12 @@ class UserRepository {
             return yield arto_prod_datasource_1.default.query(query, [id]);
         });
     }
+    getUserByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = 'SELECT * FROM "user" WHERE email = $1';
+            return yield arto_prod_datasource_1.default.query(query, [email]);
+        });
+    }
     createUser(name, email, password) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = 'INSERT INTO "user" (name, email, password) VALUES ($1, $2, $3)';

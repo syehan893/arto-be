@@ -12,13 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const token_1 = require("../common/token");
 const transaction_repository_1 = __importDefault(require("../repositories/transaction_repository"));
 class TransactionController {
     getAllTransactions(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield transaction_repository_1.default.getAllTransactions();
-                res.send(result.rows);
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield transaction_repository_1.default.getAllTransactions();
+                    res.send(result.rows);
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -29,12 +35,17 @@ class TransactionController {
         return __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id);
             try {
-                const result = yield transaction_repository_1.default.getTransactionById(id);
-                if (result.rowCount > 0) {
-                    res.send(result.rows[0]);
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield transaction_repository_1.default.getTransactionById(id);
+                    if (result.rowCount > 0) {
+                        res.send(result.rows[0]);
+                    }
+                    else {
+                        res.status(404).send('Transaction not found');
+                    }
                 }
                 else {
-                    res.status(404).send('Transaction not found');
+                    res.status(401).send('Unauthorized');
                 }
             }
             catch (err) {
@@ -46,8 +57,13 @@ class TransactionController {
         return __awaiter(this, void 0, void 0, function* () {
             const transactionData = req.body;
             try {
-                yield transaction_repository_1.default.createTransaction(transactionData);
-                res.send('Transaction created successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield transaction_repository_1.default.createTransaction(transactionData);
+                    res.send('Transaction created successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -59,8 +75,13 @@ class TransactionController {
             const id = parseInt(req.params.id);
             const transactionData = req.body;
             try {
-                yield transaction_repository_1.default.updateTransaction(id, transactionData);
-                res.send('Transaction updated successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield transaction_repository_1.default.updateTransaction(id, transactionData);
+                    res.send('Transaction updated successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -71,8 +92,13 @@ class TransactionController {
         return __awaiter(this, void 0, void 0, function* () {
             const id = parseInt(req.params.id);
             try {
-                yield transaction_repository_1.default.deleteTransaction(id);
-                res.send('Transaction deleted successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield transaction_repository_1.default.deleteTransaction(id);
+                    res.send('Transaction deleted successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');

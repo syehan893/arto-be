@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
+import { decodeToken } from '../common/token';
 import transactionRepository from '../repositories/transaction_repository';
 
 class TransactionController {
   async getAllTransactions(req: Request, res: Response) {
     try {
-      const result = await transactionRepository.getAllTransactions();
-      res.send(result.rows);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await transactionRepository.getAllTransactions();
+        res.send(result.rows);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -14,11 +19,15 @@ class TransactionController {
   async getTransactionById(req: Request, res: Response) {
     const id = parseInt(req.params.id);
     try {
-      const result = await transactionRepository.getTransactionById(id);
-      if (result.rowCount > 0) {
-        res.send(result.rows[0]);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await transactionRepository.getTransactionById(id);
+        if (result.rowCount > 0) {
+          res.send(result.rows[0]);
+        } else {
+          res.status(404).send('Transaction not found');
+        }
       } else {
-        res.status(404).send('Transaction not found');
+        res.status(401).send('Unauthorized');
       }
     } catch (err) {
       res.status(500).send('Internal Server Error');
@@ -28,8 +37,12 @@ class TransactionController {
   async createTransaction(req: Request, res: Response) {
     const transactionData = req.body;
     try {
-      await transactionRepository.createTransaction(transactionData);
-      res.send('Transaction created successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await transactionRepository.createTransaction(transactionData);
+        res.send('Transaction created successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -39,8 +52,12 @@ class TransactionController {
     const id = parseInt(req.params.id);
     const transactionData = req.body;
     try {
-      await transactionRepository.updateTransaction(id, transactionData);
-      res.send('Transaction updated successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await transactionRepository.updateTransaction(id, transactionData);
+        res.send('Transaction updated successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -49,8 +66,12 @@ class TransactionController {
   async deleteTransaction(req: Request, res: Response) {
     const id = parseInt(req.params.id);
     try {
-      await transactionRepository.deleteTransaction(id);
-      res.send('Transaction deleted successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await transactionRepository.deleteTransaction(id);
+        res.send('Transaction deleted successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }

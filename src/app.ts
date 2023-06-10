@@ -6,6 +6,8 @@ import walletController from './controllers/wallet_controller';
 import transactionController from './controllers/transaction_controller';
 import requestPaymentController from './controllers/request_payment_controller';
 import historyController from './controllers/history_controller';
+import loginController from './controllers/login_controller';
+import morgan from 'morgan';
 import bodyParser from 'body-parser';
 
 const app = express();
@@ -14,6 +16,10 @@ const port = 3000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(morgan('combined'));
+
+// auth
+app.post('/api/login', loginController.login);
 
 // user routes
 app.get('/api/users', userController.getAllUsers);

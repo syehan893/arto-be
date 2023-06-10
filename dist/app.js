@@ -11,11 +11,16 @@ const wallet_controller_1 = __importDefault(require("./controllers/wallet_contro
 const transaction_controller_1 = __importDefault(require("./controllers/transaction_controller"));
 const request_payment_controller_1 = __importDefault(require("./controllers/request_payment_controller"));
 const history_controller_1 = __importDefault(require("./controllers/history_controller"));
+const login_controller_1 = __importDefault(require("./controllers/login_controller"));
+const morgan_1 = __importDefault(require("morgan"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const app = (0, express_1.default)();
 const port = 3000;
 app.use(body_parser_1.default.json());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
+app.use((0, morgan_1.default)('combined'));
+// auth
+app.post('/api/login', login_controller_1.default.login);
 // user routes
 app.get('/api/users', user_controller_1.default.getAllUsers);
 app.get('/api/users/:id', user_controller_1.default.getUserById);

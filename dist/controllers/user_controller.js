@@ -12,13 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const token_1 = require("../common/token");
 const user_repository_1 = __importDefault(require("../repositories/user_repository"));
 class UserController {
     getAllUsers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield user_repository_1.default.getAllUsers();
-                res.send(result.rows);
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield user_repository_1.default.getAllUsers();
+                    res.send(result.rows);
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -29,12 +35,17 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = parseInt(req.params.id);
             try {
-                const result = yield user_repository_1.default.getUserById(userId);
-                if (result.rows.length > 0) {
-                    res.send(result.rows[0]);
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield user_repository_1.default.getUserById(userId);
+                    if (result.rows.length > 0) {
+                        res.send(result.rows[0]);
+                    }
+                    else {
+                        res.status(404).send('User not found');
+                    }
                 }
                 else {
-                    res.status(404).send('User not found');
+                    res.status(401).send('Unauthorized');
                 }
             }
             catch (err) {
@@ -46,8 +57,13 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const { name, email, password } = req.body;
             try {
-                yield user_repository_1.default.createUser(name, email, password);
-                res.send('User created successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield user_repository_1.default.createUser(name, email, password);
+                    res.send('User created successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -59,8 +75,13 @@ class UserController {
             const userId = parseInt(req.params.id);
             const { name, email, password } = req.body;
             try {
-                yield user_repository_1.default.updateUser(userId, name, email, password);
-                res.send('User updated successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield user_repository_1.default.updateUser(userId, name, email, password);
+                    res.send('User updated successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -71,8 +92,13 @@ class UserController {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = parseInt(req.params.id);
             try {
-                yield user_repository_1.default.deleteUser(userId);
-                res.send('User deleted successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield user_repository_1.default.deleteUser(userId);
+                    res.send('User deleted successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');

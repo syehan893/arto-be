@@ -12,13 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const token_1 = require("../common/token");
 const wallet_repository_1 = __importDefault(require("../repositories/wallet_repository"));
 class WalletController {
     getAllWallets(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield wallet_repository_1.default.getAllWallets();
-                res.send(result.rows);
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield wallet_repository_1.default.getAllWallets();
+                    res.send(result.rows);
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -29,12 +35,17 @@ class WalletController {
         return __awaiter(this, void 0, void 0, function* () {
             const walletId = parseInt(req.params.id);
             try {
-                const result = yield wallet_repository_1.default.getWalletById(walletId);
-                if (result.rowCount > 0) {
-                    res.send(result.rows[0]);
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield wallet_repository_1.default.getWalletById(walletId);
+                    if (result.rowCount > 0) {
+                        res.send(result.rows[0]);
+                    }
+                    else {
+                        res.status(404).send('Wallet not found');
+                    }
                 }
                 else {
-                    res.status(404).send('Wallet not found');
+                    res.status(401).send('Unauthorized');
                 }
             }
             catch (err) {
@@ -46,8 +57,13 @@ class WalletController {
         return __awaiter(this, void 0, void 0, function* () {
             const { userId, balance, bank, card } = req.body;
             try {
-                yield wallet_repository_1.default.createWallet(userId, balance, bank, card);
-                res.send('Wallet created successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield wallet_repository_1.default.createWallet(userId, balance, bank, card);
+                    res.send('Wallet created successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -59,8 +75,13 @@ class WalletController {
             const walletId = parseInt(req.params.id);
             const { userId, balance, bank, card } = req.body;
             try {
-                yield wallet_repository_1.default.updateWallet(walletId, userId, balance, bank, card);
-                res.send('Wallet updated successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield wallet_repository_1.default.updateWallet(walletId, userId, balance, bank, card);
+                    res.send('Wallet updated successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
@@ -71,8 +92,13 @@ class WalletController {
         return __awaiter(this, void 0, void 0, function* () {
             const walletId = parseInt(req.params.id);
             try {
-                yield wallet_repository_1.default.deleteWallet(walletId);
-                res.send('Wallet deleted successfully');
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    yield wallet_repository_1.default.deleteWallet(walletId);
+                    res.send('Wallet deleted successfully');
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');

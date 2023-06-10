@@ -1,11 +1,16 @@
 import { Request, Response } from 'express';
+import { decodeToken } from '../common/token';
 import historyRepository from '../repositories/history_repository';
 
 class HistoryController {
   async getAllHistories(req: Request, res: Response) {
     try {
-      const result = await historyRepository.getAllHistories();
-      res.send(result.rows);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await historyRepository.getAllHistories();
+        res.send(result.rows);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -14,11 +19,15 @@ class HistoryController {
   async getHistoryById(req: Request, res: Response) {
     const id = parseInt(req.params.id);
     try {
-      const result = await historyRepository.getHistoryById(id);
-      if (result.rowCount > 0) {
-        res.send(result.rows[0]);
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await historyRepository.getHistoryById(id);
+        if (result.rowCount > 0) {
+          res.send(result.rows[0]);
+        } else {
+          res.status(404).send('History not found');
+        }
       } else {
-        res.status(404).send('History not found');
+        res.status(401).send('Unauthorized');
       }
     } catch (err) {
       res.status(500).send('Internal Server Error');
@@ -28,6 +37,12 @@ class HistoryController {
   async createHistory(req: Request, res: Response) {
     const historyData = req.body;
     try {
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await historyRepository.getAllHistories();
+        res.send(result.rows);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
       await historyRepository.createHistory(historyData);
       res.send('History created successfully');
     } catch (err) {
@@ -39,8 +54,12 @@ class HistoryController {
     const id = parseInt(req.params.id);
     const historyData = req.body;
     try {
-      await historyRepository.updateHistory(id, historyData);
-      res.send('History updated successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await historyRepository.updateHistory(id, historyData);
+        res.send('History updated successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
@@ -49,8 +68,12 @@ class HistoryController {
   async deleteHistory(req: Request, res: Response) {
     const id = parseInt(req.params.id);
     try {
-      await historyRepository.deleteHistory(id);
-      res.send('History deleted successfully');
+      if (decodeToken(req.headers.authorization || '')) {
+        await historyRepository.deleteHistory(id);
+        res.send('History deleted successfully');
+      } else {
+        res.status(401).send('Unauthorized');
+      }
     } catch (err) {
       res.status(500).send('Internal Server Error');
     }
