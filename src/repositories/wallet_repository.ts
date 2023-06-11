@@ -22,6 +22,11 @@ class WalletRepository {
     return await pool.query(query, [userId, balance, bank, card, id]);
   }
 
+  async updateBalanceWallet(id: number, balance: number): Promise<QueryResult> {
+    const query = 'UPDATE wallet SET balance = $1 WHERE id = $2';
+    return await pool.query(query, [balance, id]);
+  }
+
   async deleteWallet(id: number): Promise<QueryResult> {
     const query = 'DELETE FROM wallet WHERE id = $1';
     return await pool.query(query, [id]);

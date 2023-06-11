@@ -29,7 +29,7 @@ class TransactionRepository {
     createTransaction(transactionData) {
         return __awaiter(this, void 0, void 0, function* () {
             const { wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at } = transactionData;
-            const query = 'INSERT INTO transaction (wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
+            const query = 'INSERT INTO transaction (wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id';
             return yield arto_prod_datasource_1.default.query(query, [wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at]);
         });
     }

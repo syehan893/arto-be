@@ -13,9 +13,9 @@ class HistoryRepository {
   }
 
   async createHistory(historyData: any): Promise<QueryResult> {
-    const { transaction_id, name, status, type, created_by, created_at, edited_by, edited_at } = historyData;
-    const query = 'INSERT INTO history (transaction_id, name, status, type, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
-    return await pool.query(query, [transaction_id, name, status, type, created_by, created_at, edited_by, edited_at]);
+    const { id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at } = historyData;
+    const query = 'INSERT INTO history (id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id';
+    return await pool.query(query, [id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at]);
   }
 
   async updateHistory(id: number, historyData: any): Promise<QueryResult> {

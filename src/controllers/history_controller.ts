@@ -38,7 +38,7 @@ class HistoryController {
     const historyData = req.body;
     try {
       if (decodeToken(req.headers.authorization || '')) {
-        const result = await historyRepository.getAllHistories();
+        const result = await historyRepository.createHistory(historyData);
         res.send(result.rows);
       } else {
         res.status(401).send('Unauthorized');

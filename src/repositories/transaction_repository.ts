@@ -14,7 +14,7 @@ class TransactionRepository {
 
   async createTransaction(transactionData: any): Promise<QueryResult> {
     const { wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at } = transactionData;
-    const query = 'INSERT INTO transaction (wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)';
+    const query = 'INSERT INTO transaction (wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id';
     return await pool.query(query, [wallet_id, nominal, bank_account, email_receiver, status, detail, created_by, created_at, edited_by, edited_at]);
   }
 

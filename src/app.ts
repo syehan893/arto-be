@@ -27,6 +27,7 @@ app.get('/api/users/:id', userController.getUserById);
 app.post('/api/users', userController.createUser);
 app.put('/api/users/:id', userController.updateUser);
 app.delete('/api/users/:id', userController.deleteUser);
+app.get('/api/getUserByEmail/:email', userController.getUserByEmail);
 
 // bank routes
 app.get('/api/banks', bankController.getAllBanks);
@@ -55,6 +56,8 @@ app.get('/api/transactions/:id', transactionController.getTransactionById);
 app.post('/api/transactions', transactionController.createTransaction);
 app.put('/api/transactions/:id', transactionController.updateTransaction);
 app.delete('/api/transactions/:id', transactionController.deleteTransaction);
+app.post('/api/transactions/transfer', transactionController.transfer);
+app.post('/api/transactions/topUp', transactionController.topUp);
 
 // request payment routes
 app.get('/api/request-payments', requestPaymentController.getAllRequestPayments);

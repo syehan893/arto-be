@@ -27,6 +27,7 @@ app.get('/api/users/:id', user_controller_1.default.getUserById);
 app.post('/api/users', user_controller_1.default.createUser);
 app.put('/api/users/:id', user_controller_1.default.updateUser);
 app.delete('/api/users/:id', user_controller_1.default.deleteUser);
+app.get('/api/getUserByEmail/:email', user_controller_1.default.getUserByEmail);
 // bank routes
 app.get('/api/banks', bank_controller_1.default.getAllBanks);
 app.get('/api/banks/:id', bank_controller_1.default.getBankById);
@@ -51,6 +52,8 @@ app.get('/api/transactions/:id', transaction_controller_1.default.getTransaction
 app.post('/api/transactions', transaction_controller_1.default.createTransaction);
 app.put('/api/transactions/:id', transaction_controller_1.default.updateTransaction);
 app.delete('/api/transactions/:id', transaction_controller_1.default.deleteTransaction);
+app.post('/api/transactions/transfer', transaction_controller_1.default.transfer);
+app.post('/api/transactions/topUp', transaction_controller_1.default.topUp);
 // request payment routes
 app.get('/api/request-payments', request_payment_controller_1.default.getAllRequestPayments);
 app.get('/api/request-payments/:id', request_payment_controller_1.default.getRequestPaymentById);

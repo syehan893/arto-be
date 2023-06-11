@@ -16,6 +16,20 @@ class UserController {
     }
   }
 
+  async getUserByEmail(req: Request, res: Response) {
+    const email = req.params.email.toString();
+    try {
+      if (decodeToken(req.headers.authorization || '')) {
+        const result = await userRepository.getUserByEmail(email);
+        res.send(result.rows);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
+    } catch (err) {
+      res.status(500).send('Internal Server Error');
+    }
+  }
+
   async getUserById(req: Request, res: Response) {
     const userId = parseInt(req.params.id);
     try {

@@ -38,6 +38,12 @@ class WalletRepository {
             return yield arto_prod_datasource_1.default.query(query, [userId, balance, bank, card, id]);
         });
     }
+    updateBalanceWallet(id, balance) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = 'UPDATE wallet SET balance = $1 WHERE id = $2';
+            return yield arto_prod_datasource_1.default.query(query, [balance, id]);
+        });
+    }
     deleteWallet(id) {
         return __awaiter(this, void 0, void 0, function* () {
             const query = 'DELETE FROM wallet WHERE id = $1';

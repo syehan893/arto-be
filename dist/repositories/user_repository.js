@@ -28,8 +28,25 @@ class UserRepository {
     }
     getUserByEmail(email) {
         return __awaiter(this, void 0, void 0, function* () {
-            const query = 'SELECT * FROM "user" WHERE email = $1';
-            return yield arto_prod_datasource_1.default.query(query, [email]);
+            const query = `SELECT *
+    FROM "user"
+    LEFT JOIN (
+        wallet
+        LEFT JOIN card ON wallet.id = card.wallet_id
+    ) ON "user".id = wallet.user_id
+    WHERE "user".email = $1
+    
+    UNION
+    
+    SELECT *
+    FROM "user"
+    RIGHT JOIN (
+        wallet
+        RIGHT JOIN card ON wallet.id = card.wallet_id
+    ) ON "user".id = wallet.user_id
+    WHERE "user".email = $2;`;
+            const result = yield arto_prod_datasource_1.default.query(query, [email, email]);
+            return result;
         });
     }
     createUser(name, email, password) {

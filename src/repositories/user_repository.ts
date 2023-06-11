@@ -13,8 +13,25 @@ class UserRepository {
   }
 
   async getUserByEmail(email: String): Promise<QueryResult> {
-    const query = 'SELECT * FROM "user" WHERE email = $1';
-    return await pool.query(query, [email]);
+    const query = `SELECT *
+    FROM "user"
+    LEFT JOIN (
+        wallet
+        LEFT JOIN card ON wallet.id = card.wallet_id
+    ) ON "user".id = wallet.user_id
+    WHERE "user".email = $1
+    
+    UNION
+    
+    SELECT *
+    FROM "user"
+    RIGHT JOIN (
+        wallet
+        RIGHT JOIN card ON wallet.id = card.wallet_id
+    ) ON "user".id = wallet.user_id
+    WHERE "user".email = $2;`;
+    const result = await pool.query(query, [email, email]);
+    return result;
   }
 
   async createUser(name: string, email: string, password: string): Promise<QueryResult> {

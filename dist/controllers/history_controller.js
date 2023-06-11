@@ -58,7 +58,7 @@ class HistoryController {
             const historyData = req.body;
             try {
                 if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
-                    const result = yield history_repository_1.default.getAllHistories();
+                    const result = yield history_repository_1.default.createHistory(historyData);
                     res.send(result.rows);
                 }
                 else {

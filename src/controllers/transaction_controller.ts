@@ -1,6 +1,9 @@
 import { Request, Response } from 'express';
 import { decodeToken } from '../common/token';
 import transactionRepository from '../repositories/transaction_repository';
+import userRepository from '../repositories/user_repository';
+import walletRepository from '../repositories/wallet_repository';
+import historyRepository from '../repositories/history_repository';
 
 class TransactionController {
   async getAllTransactions(req: Request, res: Response) {
@@ -13,6 +16,122 @@ class TransactionController {
       }
     } catch (err) {
       res.status(500).send('Internal Server Error');
+    }
+  }
+  async topUp(req: Request, res: Response) {
+    try {
+      const transactionData = req.body;
+      const { emailSender, detail, nominal, phoneNumber, ewallet } = transactionData;
+      if (decodeToken(req.headers.authorization || '')) {
+        const sender = await userRepository.getUserByEmail(emailSender);
+
+        const balanceSender = parseInt(sender.rows[0]['balance']) - parseInt(nominal);
+        await walletRepository.updateBalanceWallet(sender.rows[0]['wallet_id'], balanceSender);
+
+        const transactionParam = {
+          'wallet_id': sender.rows[0]['wallet_id'],
+          'nominal': nominal,
+          'bank_account': phoneNumber,
+          'email_receiver': emailSender,
+          'status': 'COMPLETED',
+          'detail': detail,
+          'created_by': emailSender,
+          'created_at': 'now()',
+          'edited_by': emailSender,
+          'edited_at': 'now()',
+        };
+        const transaction = await transactionRepository.createTransaction(transactionParam);
+
+        const historySenderParam = {
+          'id': Math.floor((Math.random()*10000000)+1),
+          'transaction_id': transaction.rows[0].id,
+          'name': `Top Up ${ewallet} - ${phoneNumber}`,
+          'status': true,
+          'type': 'Top Up',
+          'created_by': emailSender,
+          'created_at': 'now()',
+          'edited_by': emailSender,
+          'edited_at': 'now()',
+        }
+         await historyRepository.createHistory(historySenderParam);
+
+        res.status(200).send(`Transfer Success ${transaction.rows[0].id}`);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
+    } catch (error) {
+      res.status(500).send(`Internal Server Error ${error}`);
+    }
+  }
+
+  async transfer(req: Request, res: Response) {
+    try {
+      const transactionData = req.body;
+      const { emailSender, emailReceiver, detail, nominal, noRek } = transactionData;
+      if (decodeToken(req.headers.authorization || '')) {
+        const sender = await userRepository.getUserByEmail(emailSender);
+        const receiver = await userRepository.getUserByEmail(emailReceiver);
+        if (noRek !== receiver.rows[0]['card_number']) {
+          console.log('error no rek ga sama');
+          res.status(500).send('Internal Server Error');
+        }
+        if (sender.rows[0]['balance'] < nominal) {
+          console.log('error saldo kurang');
+          res.status(500).send('Internal Server Error');
+        }
+
+        const balanceReceiver = parseInt(receiver.rows[0]['balance']) + parseInt(nominal);
+        await walletRepository.updateBalanceWallet(receiver.rows[0]['wallet_id'], balanceReceiver);
+
+        const balanceSender = parseInt(sender.rows[0]['balance']) - parseInt(nominal);
+        await walletRepository.updateBalanceWallet(sender.rows[0]['wallet_id'], balanceSender);
+
+        const transactionParam = {
+          'wallet_id': sender.rows[0]['wallet_id'],
+          'nominal': nominal,
+          'bank_account': noRek,
+          'email_receiver': emailReceiver,
+          'status': 'COMPLETED',
+          'detail': detail,
+          'created_by': emailSender,
+          'created_at': 'now()',
+          'edited_by': emailSender,
+          'edited_at': 'now()',
+        };
+        const transaction = await transactionRepository.createTransaction(transactionParam);
+
+        const historySenderParam = {
+          'id': Math.floor((Math.random()*10000000)+1),
+          'transaction_id': transaction.rows[0].id,
+          'name': `Transfer ke Rekening ${receiver.rows[0]['name']}`,
+          'status': true,
+          'type': 'Transfer Keluar',
+          'created_by': emailSender,
+          'created_at': 'now()',
+          'edited_by': emailSender,
+          'edited_at': 'now()',
+        }
+         await historyRepository.createHistory(historySenderParam);
+
+        const historyReceiverParam = {
+          'id': Math.floor((Math.random()*10000000)+1),
+          'transaction_id': transaction.rows[0].id,
+          'name': `Transfer dari Rekening ${sender.rows[0]['name']}`,
+          'status': true,
+          'type': 'Transfer Keluar',
+          'created_by': emailReceiver,
+          'created_at': 'now()',
+          'edited_by': emailReceiver,
+          'edited_at': 'now()',
+        }
+        await historyRepository.createHistory(historyReceiverParam);
+
+        res.status(200).send(`Transfer Success ${transaction.rows[0].id}`);
+      } else {
+        res.status(401).send('Unauthorized');
+      }
+    } catch (error) {
+      res.status(500).send(`Internal Server Error ${error}`);
     }
   }
 

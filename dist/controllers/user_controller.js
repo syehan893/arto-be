@@ -31,6 +31,23 @@ class UserController {
             }
         });
     }
+    getUserByEmail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const email = req.params.email.toString();
+            try {
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield user_repository_1.default.getUserByEmail(email);
+                    res.send(result.rows);
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
+            }
+            catch (err) {
+                res.status(500).send('Internal Server Error');
+            }
+        });
+    }
     getUserById(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             const userId = parseInt(req.params.id);

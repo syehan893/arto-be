@@ -28,9 +28,9 @@ class HistoryRepository {
     }
     createHistory(historyData) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { transaction_id, name, status, type, created_by, created_at, edited_by, edited_at } = historyData;
-            const query = 'INSERT INTO history (transaction_id, name, status, type, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)';
-            return yield arto_prod_datasource_1.default.query(query, [transaction_id, name, status, type, created_by, created_at, edited_by, edited_at]);
+            const { id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at } = historyData;
+            const query = 'INSERT INTO history (id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id';
+            return yield arto_prod_datasource_1.default.query(query, [id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at]);
         });
     }
     updateHistory(id, historyData) {
