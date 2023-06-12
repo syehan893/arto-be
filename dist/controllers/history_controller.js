@@ -19,7 +19,7 @@ class HistoryController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
-                    const result = yield history_repository_1.default.getAllHistories();
+                    const result = yield history_repository_1.default.getHistoryByEmail(req.params.email);
                     res.send(result.rows);
                 }
                 else {

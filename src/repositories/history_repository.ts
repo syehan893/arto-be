@@ -12,6 +12,11 @@ class HistoryRepository {
     return await pool.query(query, [id]);
   }
 
+  async getHistoryByEmail(email: string): Promise<QueryResult> {
+    const query = 'SELECT * FROM history WHERE created_by = $1';
+    return await pool.query(query, [email]);
+  }
+
   async createHistory(historyData: any): Promise<QueryResult> {
     const { id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at } = historyData;
     const query = 'INSERT INTO history (id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id';

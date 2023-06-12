@@ -22,7 +22,7 @@ class TransactionController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
-                    const result = yield transaction_repository_1.default.getAllTransactions();
+                    const result = yield transaction_repository_1.default.getTransactionByEmail(req.params.email);
                     res.send(result.rows);
                 }
                 else {
@@ -31,6 +31,113 @@ class TransactionController {
             }
             catch (err) {
                 res.status(500).send('Internal Server Error');
+            }
+        });
+    }
+    getAllTransactionsByType(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const request = req.params.email;
+            try {
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const result = yield transaction_repository_1.default.getTransactionByType(request);
+                    res.send(result.rows);
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
+            }
+            catch (err) {
+                res.status(500).send(`Internal Server Error ${err}`);
+            }
+        });
+    }
+    approveRejectRequestPayment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const transactionData = req.body;
+                const { trxId, emailReceiver, nominal, isApprove } = transactionData;
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const sender = yield user_repository_1.default.getUserByEmail(emailReceiver);
+                    if (isApprove) {
+                        const balanceReceiver = parseInt(sender.rows[0]['balance']) - parseInt(nominal);
+                        yield wallet_repository_1.default.updateBalanceWallet(sender.rows[0]['wallet_id'], balanceReceiver);
+                        const transactionParam = {
+                            'status': 'APPROVED',
+                            'edited_by': emailReceiver,
+                            'edited_at': 'now()',
+                        };
+                        const transaction = yield transaction_repository_1.default.updateTransactionByEmailReceiver(trxId, transactionParam);
+                        const historySenderParam = {
+                            'id': Math.floor((Math.random() * 10000000) + 1),
+                            'transaction_id': transaction.rows[0].id,
+                            'name': `Request Payment Approved`,
+                            'status': true,
+                            'type': 'Request Payment',
+                            'created_by': emailReceiver,
+                            'created_at': 'now()',
+                            'edited_by': emailReceiver,
+                            'edited_at': 'now()',
+                        };
+                        yield history_repository_1.default.createHistory(historySenderParam);
+                        res.status(200).send(`Request Payment Approved ${transaction.rows[0].id}`);
+                    }
+                    else {
+                        const transactionParam = {
+                            'status': 'REJECTED',
+                            'edited_by': emailReceiver,
+                            'edited_at': 'now()',
+                        };
+                        const transaction = yield transaction_repository_1.default.updateTransactionByEmailReceiver(trxId, transactionParam);
+                        const historySenderParam = {
+                            'id': Math.floor((Math.random() * 10000000) + 1),
+                            'transaction_id': transaction.rows[0].id,
+                            'name': `Request Payment Rejected`,
+                            'status': false,
+                            'type': 'Request Payment',
+                            'created_by': emailReceiver,
+                            'created_at': 'now()',
+                            'edited_by': emailReceiver,
+                            'edited_at': 'now()',
+                        };
+                        yield history_repository_1.default.createHistory(historySenderParam);
+                        res.status(200).send(`Request Payment Rejected ${transaction.rows[0].id}`);
+                    }
+                }
+                else {
+                    res.status(401).send('Unauthorized');
+                }
+            }
+            catch (error) {
+                res.status(500).send(`Internal Server Error ${error}`);
+            }
+        });
+    }
+    requestPayment(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const transactionData = req.body;
+                const { emailSender, nominal, noRek } = transactionData;
+                if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
+                    const sender = yield user_repository_1.default.getUserByEmail(emailSender);
+                    const transactionParam = {
+                        'wallet_id': sender.rows[0]['wallet_id'],
+                        'nominal': nominal,
+                        'bank_account': noRek,
+                        'email_receiver': emailSender,
+                        'status': 'WAITING_APPROVAL',
+                        'type': 'REQUEST_PAYMENT',
+                        'detail': `Transfer Ke Rekening ${sender.rows[0]['name']}`,
+                        'created_by': emailSender,
+                        'created_at': 'now()',
+                        'edited_by': emailSender,
+                        'edited_at': 'now()',
+                    };
+                    yield transaction_repository_1.default.createTransaction(transactionParam);
+                    res.status(200).send('Request Payment Created');
+                }
+            }
+            catch (error) {
+                res.status(500).send(`Internal Server Error ${error}`);
             }
         });
     }
@@ -49,6 +156,7 @@ class TransactionController {
                         'bank_account': phoneNumber,
                         'email_receiver': emailSender,
                         'status': 'COMPLETED',
+                        'type': 'TOPUP',
                         'detail': detail,
                         'created_by': emailSender,
                         'created_at': 'now()',
@@ -68,7 +176,7 @@ class TransactionController {
                         'edited_at': 'now()',
                     };
                     yield history_repository_1.default.createHistory(historySenderParam);
-                    res.status(200).send(`Transfer Success ${transaction.rows[0].id}`);
+                    res.status(200).send(`Top Up Success ${transaction.rows[0].id}`);
                 }
                 else {
                     res.status(401).send('Unauthorized');
@@ -105,6 +213,7 @@ class TransactionController {
                         'bank_account': noRek,
                         'email_receiver': emailReceiver,
                         'status': 'COMPLETED',
+                        'type': 'TRANSFER',
                         'detail': detail,
                         'created_by': emailSender,
                         'created_at': 'now()',

@@ -51,13 +51,16 @@ app.put('/api/wallets/:id', walletController.updateWallet);
 app.delete('/api/wallets/:id', walletController.deleteWallet);
 
 // transaction routes
-app.get('/api/transactions', transactionController.getAllTransactions);
+app.get('/api/transactions/:email', transactionController.getAllTransactions);
 app.get('/api/transactions/:id', transactionController.getTransactionById);
 app.post('/api/transactions', transactionController.createTransaction);
 app.put('/api/transactions/:id', transactionController.updateTransaction);
 app.delete('/api/transactions/:id', transactionController.deleteTransaction);
 app.post('/api/transactions/transfer', transactionController.transfer);
 app.post('/api/transactions/topUp', transactionController.topUp);
+app.post('/api/transactions/requestPayment', transactionController.requestPayment);
+app.get('/api/transactions/getRequestPayment/:email', transactionController.getAllTransactionsByType);
+app.post('/api/transactions/requestPaymentApproval', transactionController.approveRejectRequestPayment);
 
 // request payment routes
 app.get('/api/request-payments', requestPaymentController.getAllRequestPayments);
@@ -67,7 +70,7 @@ app.put('/api/request-payments/:id', requestPaymentController.updateRequestPayme
 app.delete('/api/request-payments/:id', requestPaymentController.deleteRequestPayment);
 
 // history routes
-app.get('/api/histories', historyController.getAllHistories);
+app.get('/api/histories/:email', historyController.getAllHistories);
 app.get('/api/histories/:id', historyController.getHistoryById);
 app.post('/api/histories', historyController.createHistory);
 app.put('/api/histories/:id', historyController.updateHistory);

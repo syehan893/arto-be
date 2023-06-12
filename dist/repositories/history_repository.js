@@ -26,6 +26,12 @@ class HistoryRepository {
             return yield arto_prod_datasource_1.default.query(query, [id]);
         });
     }
+    getHistoryByEmail(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const query = 'SELECT * FROM history WHERE created_by = $1';
+            return yield arto_prod_datasource_1.default.query(query, [email]);
+        });
+    }
     createHistory(historyData) {
         return __awaiter(this, void 0, void 0, function* () {
             const { id, transaction_id, name, status, type, created_by, created_at, edited_by, edited_at } = historyData;

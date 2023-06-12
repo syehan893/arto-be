@@ -6,7 +6,7 @@ class HistoryController {
   async getAllHistories(req: Request, res: Response) {
     try {
       if (decodeToken(req.headers.authorization || '')) {
-        const result = await historyRepository.getAllHistories();
+        const result = await historyRepository.getHistoryByEmail(req.params.email);
         res.send(result.rows);
       } else {
         res.status(401).send('Unauthorized');

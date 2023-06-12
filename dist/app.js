@@ -47,13 +47,16 @@ app.post('/api/wallets', wallet_controller_1.default.createWallet);
 app.put('/api/wallets/:id', wallet_controller_1.default.updateWallet);
 app.delete('/api/wallets/:id', wallet_controller_1.default.deleteWallet);
 // transaction routes
-app.get('/api/transactions', transaction_controller_1.default.getAllTransactions);
+app.get('/api/transactions/:email', transaction_controller_1.default.getAllTransactions);
 app.get('/api/transactions/:id', transaction_controller_1.default.getTransactionById);
 app.post('/api/transactions', transaction_controller_1.default.createTransaction);
 app.put('/api/transactions/:id', transaction_controller_1.default.updateTransaction);
 app.delete('/api/transactions/:id', transaction_controller_1.default.deleteTransaction);
 app.post('/api/transactions/transfer', transaction_controller_1.default.transfer);
 app.post('/api/transactions/topUp', transaction_controller_1.default.topUp);
+app.post('/api/transactions/requestPayment', transaction_controller_1.default.requestPayment);
+app.get('/api/transactions/getRequestPayment/:email', transaction_controller_1.default.getAllTransactionsByType);
+app.post('/api/transactions/requestPaymentApproval', transaction_controller_1.default.approveRejectRequestPayment);
 // request payment routes
 app.get('/api/request-payments', request_payment_controller_1.default.getAllRequestPayments);
 app.get('/api/request-payments/:id', request_payment_controller_1.default.getRequestPaymentById);
@@ -61,7 +64,7 @@ app.post('/api/request-payments', request_payment_controller_1.default.createReq
 app.put('/api/request-payments/:id', request_payment_controller_1.default.updateRequestPayment);
 app.delete('/api/request-payments/:id', request_payment_controller_1.default.deleteRequestPayment);
 // history routes
-app.get('/api/histories', history_controller_1.default.getAllHistories);
+app.get('/api/histories/:email', history_controller_1.default.getAllHistories);
 app.get('/api/histories/:id', history_controller_1.default.getHistoryById);
 app.post('/api/histories', history_controller_1.default.createHistory);
 app.put('/api/histories/:id', history_controller_1.default.updateHistory);
