@@ -23,7 +23,7 @@ class TransactionController {
             try {
                 if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
                     const result = yield transaction_repository_1.default.getTransactionByEmail(req.params.email);
-                    res.send(result.rows);
+                    res.send({ 'response': result.rows });
                 }
                 else {
                     res.status(401).send('Unauthorized');
@@ -40,7 +40,7 @@ class TransactionController {
             try {
                 if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
                     const result = yield transaction_repository_1.default.getTransactionByType(request);
-                    res.send(result.rows);
+                    res.send({ 'response': result.rows });
                 }
                 else {
                     res.status(401).send('Unauthorized');

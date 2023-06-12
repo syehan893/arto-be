@@ -20,7 +20,7 @@ class HistoryController {
             try {
                 if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
                     const result = yield history_repository_1.default.getHistoryByEmail(req.params.email);
-                    res.send(result.rows);
+                    res.send({ 'response': result.rows });
                 }
                 else {
                     res.status(401).send('Unauthorized');

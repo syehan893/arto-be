@@ -21,7 +21,7 @@ class UserController {
     try {
       if (decodeToken(req.headers.authorization || '')) {
         const result = await userRepository.getUserByEmail(email);
-        res.send(result.rows);
+        res.send({ 'response': result.rows });
       } else {
         res.status(401).send('Unauthorized');
       }

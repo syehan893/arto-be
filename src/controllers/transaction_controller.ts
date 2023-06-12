@@ -10,7 +10,7 @@ class TransactionController {
     try {
       if (decodeToken(req.headers.authorization || '')) {
         const result = await transactionRepository.getTransactionByEmail(req.params.email);
-        res.send(result.rows);
+        res.send({ 'response': result.rows });
       } else {
         res.status(401).send('Unauthorized');
       }
@@ -24,7 +24,7 @@ class TransactionController {
     try {
       if (decodeToken(req.headers.authorization || '')) {
         const result = await transactionRepository.getTransactionByType(request);
-        res.send(result.rows);
+        res.send({ 'response': result.rows });
       } else {
         res.status(401).send('Unauthorized');
       }
