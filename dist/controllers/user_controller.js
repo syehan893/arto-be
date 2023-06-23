@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const token_1 = require("../common/token");
 const user_repository_1 = __importDefault(require("../repositories/user_repository"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 class UserController {
     getAllUsers(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -75,7 +76,8 @@ class UserController {
             const { name, email, password } = req.body;
             try {
                 if ((0, token_1.decodeToken)(req.headers.authorization || '')) {
-                    yield user_repository_1.default.createUser(name, email, password);
+                    const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+                    yield user_repository_1.default.createUser(name, email, hashedPassword);
                     res.send('User created successfully');
                 }
                 else {

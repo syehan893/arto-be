@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { decodeToken } from '../common/token';
 import userRepository from '../repositories/user_repository';
+import bcrypt from 'bcrypt';
 
 class UserController {
   async getAllUsers(req: Request, res: Response) {
@@ -52,7 +53,8 @@ class UserController {
     const { name, email, password } = req.body;
     try {
       if (decodeToken(req.headers.authorization || '')) {
-        await userRepository.createUser(name, email, password);
+        const hashedPassword  = await bcrypt.hash(password, 10);
+        await userRepository.createUser(name, email, hashedPassword);
         res.send('User created successfully');
       } else {
         res.status(401).send('Unauthorized');
